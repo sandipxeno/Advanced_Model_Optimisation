@@ -1,0 +1,26 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints
+
+# Dataset files
+*.csv
+*.txt
+*.png
+*.jpg
+*.jpeg
+*.yaml
+coco*/
+coco*/
+
+# Conda / Python environment
+.env
+*.conda
+*.egg-info/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
