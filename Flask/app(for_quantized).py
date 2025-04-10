@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-model = YOLO("D:/prodigal-4/yolov12_quant_api/models/yolo12n_pruned.pth") 
+model = YOLO("C:/Users/user/Desktop/yolov12_quant_api/models/yolo12n.quantized.onnx") 
 
 video_path = ""
 detected_labels = set()
