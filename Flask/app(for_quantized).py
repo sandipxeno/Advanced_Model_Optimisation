@@ -5,10 +5,17 @@ import cv2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
 app.config['UPLOAD_FOLDER'] = 'C:/Users/user/Desktop/yolov12_quant_api/Flask/static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-model = YOLO("C:/Users/user/Desktop/yolov12_quant_api/models/yolo12n.quantized.onnx") 
+
+UPLOAD_FOLDER = 'D:/prodigal-4/yolov12_quant_api/Flask/static/uploads'
+OUTPUT_FOLDER = 'D:/prodigal-4/yolov12_quant_api//test(out_put)'  
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+model = YOLO("D:/prodigal-4/yolov12_quant_api/models/yolo12n.quantized.onnx")
 
 video_path = ""
 detected_labels = set()
@@ -31,7 +38,7 @@ def upload_video():
 
     if file:
         filename = secure_filename(file.filename)
-        video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        video_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(video_path)
         print(f"[INFO] Video uploaded to: {video_path}")
         return render_template('index.html', video_uploaded=True)
@@ -40,6 +47,15 @@ def upload_video():
 
 def generate_frames():
     cap = cv2.VideoCapture(video_path)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    output_name = os.path.splitext(os.path.basename(video_path))[0] + "_output.mp4"
+    output_path = os.path.join(OUTPUT_FOLDER, output_name)
+    
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS)) or 25
+
+    out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
 
     while cap.isOpened():
         success, frame = cap.read()
@@ -55,12 +71,15 @@ def generate_frames():
             cv2.putText(frame, label, (x1, y1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
+        out.write(frame)
+
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
     cap.release()
+    out.release()
 
 @app.route('/video_feed')
 def video_feed():
