@@ -5,7 +5,7 @@ import cv2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = 'C:/Users/user/Desktop/yolov12_quant_api/Flask/static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 model = YOLO("C:/Users/user/Desktop/yolov12_quant_api/models/yolo12n.quantized.onnx") 
